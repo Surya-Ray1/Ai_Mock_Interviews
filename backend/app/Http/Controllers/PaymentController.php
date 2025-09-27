@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Razorpay\Api\Api;
+use App\Models\Payment;
+use Illuminate\Support\Facades\Log;
+
+class PaymentController extends Controller
+{
+    private function api(): Api {
+        return new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+    }
+
+    public function createRazorpayOrder(Request $r) {
+        try {
+            $u = $r->user();
+            $base   = (int) env('PRO_PRICE_PAISE', 29900);
+            $pct    = (float) env('CONVENIENCE_FEE_PCT', 0.03);
+            $minFee = (int) env('CONVENIENCE_FEE_MIN_PAISE', 500);
+            $fee    = max((int) round($base * $pct), $minFee);
+            $amount = $base + $fee;
+
+            $order = $this->api()->order->create([
+                'amount'   => $amount,
+                'currency' => 'INR',
+                'receipt'  => 'rcpt_'.time().'_u'.$u->id,
+                'notes'    => ['user_id'=>$u->id, 'type'=>'pro_upgrade', 'base'=>$base, 'fee'=>$fee],
+            ]);
+
+            Payment::create([
+                'user_id'  => $u->id,
+                'order_id' => $order['id'],
+                'amount'   => $amount,
+                'currency' => 'INR',
+                'status'   => 'created',
+                'notes'    => ['base'=>$base, 'fee'=>$fee],
+            ]);
+
+            return [
+                'key'      => env('RAZORPAY_KEY_ID'),
+                'order_id' => $order['id'],
+                'amount'   => $amount,
+                'currency' => 'INR',
+                'user'     => ['name'=>$u->name, 'email'=>$u->email],
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Razorpay create order failed', ['ex' => $e->getMessage()]);
+            return response()->json(['error' => 'Razorpay error: '.$e->getMessage()], 400);
+        }
+    }
+
+    public function verifyRazorpay(Request $r) {
+        try {
+            $data = $r->validate([
+                'razorpay_order_id'   => 'required|string',
+                'razorpay_payment_id' => 'required|string',
+                'razorpay_signature'  => 'required|string',
+            ]);
+
+            $p = Payment::where('order_id', $data['razorpay_order_id'])->firstOrFail();
+
+            $expected = hash_hmac(
+                'sha256',
+                $data['razorpay_order_id'].'|'.$data['razorpay_payment_id'],
+                env('RAZORPAY_KEY_SECRET')
+            );
+
+            if (!hash_equals($expected, $data['razorpay_signature'])) {
+                $p->update([
+                    'status' => 'failed',
+                    'payment_id' => $data['razorpay_payment_id'],
+                    'signature'  => $data['razorpay_signature'],
+                ]);
+                return response()->json(['error'=>'Signature verification failed'], 400);
+            }
+
+            $p->update([
+                'status' => 'paid',
+                'payment_id' => $data['razorpay_payment_id'],
+                'signature'  => $data['razorpay_signature'],
+            ]);
+
+            $u = $p->user;
+            $u->plan = 'pro';
+            $u->save();
+
+            return ['ok'=>true, 'plan'=>$u->plan];
+        } catch (\Throwable $e) {
+            Log::error('Razorpay verify failed', ['ex' => $e->getMessage()]);
+            return response()->json(['error' => 'Razorpay verify error: '.$e->getMessage()], 400);
+        }
+    }
+}

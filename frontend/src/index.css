@@ -1,0 +1,162 @@
+/* ====== Interview "stage" styles (dark two-tile layout) ====== */
+:root {
+  --iv-bg: #0d0f16;
+  --iv-panel: #0f1220;
+  --iv-panel2: #0f141f;
+  --iv-border: rgba(255,255,255,0.08);
+  --iv-text: #f4f5f7;
+  --iv-sub: #aeb4c3;
+  --iv-primary: #7955ff;
+  --iv-glow: rgba(121,85,255,0.35);
+}
+
+body {
+  background: var(--iv-bg);
+  color: var(--iv-text);
+}
+
+.iv-stage {
+  position: relative;
+  min-height: calc(100vh - 96px);
+  padding: 20px 16px 100px;
+}
+
+/* header */
+.iv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.iv-title {
+  font-weight: 800;
+  font-size: clamp(20px, 3.2vw, 30px);
+  letter-spacing: 0.2px;
+}
+.iv-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.iv-chip {
+  border-radius: 20px;
+  padding: 6px 10px;
+  text-transform: lowercase;
+  background: #1a1e2e !important;
+  border: 1px solid var(--iv-border);
+  color: var(--iv-sub);
+}
+
+/* tiles row */
+.iv-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 900px) {
+  .iv-tiles { grid-template-columns: 1fr; }
+}
+
+/* tile panel */
+.iv-tile {
+  background: radial-gradient(120% 140% at 0% 0%, #121533 0%, #0f1220 50%, #0b0e16 100%);
+  border: 1px solid var(--iv-border);
+  border-radius: 22px;
+  padding: clamp(24px, 3vw, 36px);
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.25),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+/* subtle variance for right tile */
+.iv-user {
+  background: radial-gradient(120% 140% at 0% 0%, #171a27 0%, #121624 50%, #0b0f18 100%);
+}
+
+/* avatar */
+.iv-avatar {
+  width: clamp(88px, 13vw, 140px);
+  height: clamp(88px, 13vw, 140px);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(100% 100% at 50% 50%, #2b2f47 0%, #1b1f33 100%);
+  border: 1px solid var(--iv-border);
+  box-shadow: 0 0 0 8px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.35);
+  color: #e9ecff;
+  font-size: clamp(28px, 5vw, 44px);
+}
+.iv-avatar.rec {
+  outline: 3px solid var(--iv-primary);
+  box-shadow: 0 0 0 8px var(--iv-glow), 0 20px 60px rgba(0,0,0,0.35);
+}
+.iv-avatar-img {
+  width: 86%;
+  height: 86%;
+  object-fit: cover;
+  border-radius: 999px;
+  filter: saturate(0.95);
+}
+
+/* name label */
+.iv-name {
+  margin-top: 14px;
+  font-size: clamp(16px, 2.2vw, 22px);
+  font-weight: 700;
+  color: var(--iv-text);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35);
+}
+
+/* controls bar (bottom center) */
+.iv-controls {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(24,28,45,0.92), rgba(15,18,32,0.92));
+  border: 1px solid var(--iv-border);
+  padding: 10px 14px;
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+/* error toast */
+.iv-error {
+  position: fixed;
+  right: 18px;
+  bottom: 24px;
+  max-width: 420px;
+  background: #2a1214 !important;
+  border: 1px solid rgba(255,0,0,0.18) !important;
+  color: #ffd7db !important;
+}
+
+/* tiny transcript bubbles (debug) */
+.iv-transcripts {
+  position: fixed;
+  left: 18px;
+  bottom: 24px;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.iv-bubble {
+  font-size: 12.5px;
+  color: var(--iv-sub);
+  background: #111523;
+  border: 1px solid var(--iv-border);
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+.iv-bubble.user { color: #d7e5ff; }
+.iv-bubble.ai   { color: #dcd6ff; }
