@@ -1,11 +1,11 @@
-# 🎤 AI Mock Interviews
+# AI Mock Interviews
 
 A full-stack web application for practicing **real-time mock interviews with AI**.  
 It supports **free browser-based voice interviews** and an option to upgrade to **Gemini Live (paid, low-latency WebRTC)**.
 
 ---
 
-## 🚀 Features
+## Features
 
 - 🔑 **Authentication** with Laravel Sanctum (Register/Login/Logout).
 - 🗣 **Two voice modes**:
@@ -39,10 +39,4 @@ It supports **free browser-based voice interviews** and an option to upgrade to 
 
 ### AI Engines
 - **OpenAI GPT-4o-mini** (default, free tier limited).
-- **Google Gemini** (optional, requires API key).
-- Gemini Live (WebRTC) — ready for paid upgrade.
-
----
-
-## 📂 Project Structure
 
