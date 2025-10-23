@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, Form, Button, Alert, Row, Col, Spinner, ProgressBar } from 'react-bootstrap';
-import { register } from '../services/api';
+import { register, API_BASE } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useToaster } from '../components/Toaster';
 
@@ -26,7 +26,10 @@ export default function Register(){
       localStorage.setItem('token', token);
       toast.push('success','Welcome','Your account has been created.');
       nav('/setup');
-    }catch(e){ setErr(e.response?.data?.message || 'Registration failed'); }
+    }catch(e){
+      if(!e.response){ setErr(`Cannot reach API (${API_BASE}). Is the backend running?`); }
+      else { setErr(e.response?.data?.message || 'Registration failed'); }
+    }
     finally{ setLoading(false); }
   };
   return (
@@ -62,7 +65,7 @@ export default function Register(){
                   <div className="text-secondary small mt-1">Use at least 8 characters. Add numbers and symbols for a stronger password.</div>
                 </Form.Group>
                 <Form.Check className="mt-2 mb-3" type="checkbox" label="I agree to the Terms and Privacy" checked={f.agree} onChange={e=>setF({...f,agree:e.target.checked})}/>
-                <Button type="submit" className="w-100" disabled={loading}>{loading ? (<><Spinner as="span" size="sm" className="me-2" animation="border" /> Creating…</>):'Create account'}</Button>
+                <Button type="submit" className="w-100 mb-3" disabled={loading}>{loading ? (<><Spinner as="span" size="sm" className="me-2" animation="border" /> Creating…</>):'Create account'}</Button>
                 <div className="text-center mt-3 text-secondary">Already have an account? <a href="/login">Sign in</a></div>
               </Form>
             </Card.Body>

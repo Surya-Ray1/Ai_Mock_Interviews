@@ -203,3 +203,62 @@ body {
   --iv-text: #121621;
   --iv-sub: #465168;
 }
+
+/* ====== Home Page Styles ====== */
+.home-page {
+  background: var(--iv-bg);
+  color: var(--iv-text);
+}
+
+.hero-section {
+  background: radial-gradient(circle at top, rgba(121,85,255,0.15) 0%, transparent 60%),
+              linear-gradient(180deg, var(--iv-bg) 0%, var(--iv-panel) 100%);
+  border-bottom: 1px solid var(--iv-border);
+}
+
+.feature-card {
+  background: var(--iv-panel);
+  border: 1px solid var(--iv-border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.pricing-section {
+  background: var(--iv-panel2) !important;
+  border-top: 1px solid var(--iv-border);
+  border-bottom: 1px solid var(--iv-border);
+}
+
+.pricing-card {
+  background: var(--iv-panel);
+  border: 1px solid var(--iv-border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+
+.step-number {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--iv-primary), #5f3dcc);
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(121,85,255,0.3);
+}
