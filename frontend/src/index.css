@@ -193,3 +193,13 @@ body {
   color: #ffd7db;
   font-size: 12px;
 }
+
+/* Light theme overrides */
+.theme-light {
+  --iv-bg: #f7f9fc;
+  --iv-panel: #ffffff;
+  --iv-panel2: #f4f6fb;
+  --iv-border: rgba(0,0,0,0.08);
+  --iv-text: #121621;
+  --iv-sub: #465168;
+}
