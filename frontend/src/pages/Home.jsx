@@ -114,10 +114,11 @@ export default function Home(){
                   </Card>
                 </Col>
                 <Col md={6}>
-                  <Card className="pricing-card h-100 border-primary">
+                  <Card className="pricing-card pricing-card-pro h-100 border-primary">
                     <Card.Body className="p-4">
+                      <div className="pro-badge mb-2">POPULAR</div>
                       <h4 className="fw-bold mb-2">Pro Access</h4>
-                      <div className="display-6 fw-bold mb-3">₹299</div>
+                      <div className="display-6 fw-bold mb-3 text-primary">₹299</div>
                       <ul className="list-unstyled text-start mb-4">
                         <li className="mb-2">✓ Unlimited turns</li>
                         <li className="mb-2">✓ Longer sessions</li>

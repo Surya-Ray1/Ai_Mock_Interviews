@@ -249,6 +249,28 @@ body {
   box-shadow: 0 12px 40px rgba(0,0,0,0.25);
 }
 
+.pricing-card-pro {
+  background: linear-gradient(135deg, rgba(121,85,255,0.1) 0%, rgba(95,61,204,0.05) 100%), var(--iv-panel);
+  border: 2px solid var(--iv-primary) !important;
+  box-shadow: 0 8px 32px rgba(121,85,255,0.2);
+  position: relative;
+}
+
+.pricing-card-pro:hover {
+  box-shadow: 0 12px 48px rgba(121,85,255,0.35);
+}
+
+.pro-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--iv-primary), #5f3dcc);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
 .step-number {
   width: 60px;
   height: 60px;
