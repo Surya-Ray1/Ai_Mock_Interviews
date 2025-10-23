@@ -16,6 +16,10 @@ class PaymentController extends Controller
     public function createRazorpayOrder(Request $r) {
         try {
             $u = $r->user();
+            if (!$u) {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
+            
             $base   = (int) env('PRO_PRICE_PAISE', 29900);
             $pct    = (float) env('CONVENIENCE_FEE_PCT', 0.03);
             $minFee = (int) env('CONVENIENCE_FEE_MIN_PAISE', 500);
@@ -52,8 +56,19 @@ class PaymentController extends Controller
                 'user'     => ['name'=>$u->name, 'email'=>$u->email],
             ];
         } catch (\Throwable $e) {
-            Log::error('Razorpay create order failed', ['ex' => $e->getMessage()]);
-            return response()->json(['error' => 'Razorpay error: '.$e->getMessage()], 400);
+            Log::error('Razorpay create order failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => $r->user()->id ?? null
+            ]);
+            $errorMsg = $e->getMessage();
+            // Make error more user-friendly
+            if (str_contains($errorMsg, 'Authentication failed')) {
+                $errorMsg = 'Razorpay API authentication failed. Please check your API keys.';
+            } elseif (str_contains($errorMsg, 'network') || str_contains($errorMsg, 'timeout')) {
+                $errorMsg = 'Unable to connect to payment gateway. Please try again.';
+            }
+            return response()->json(['error' => $errorMsg], 400);
         }
     }
 
