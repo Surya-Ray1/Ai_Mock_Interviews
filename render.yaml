@@ -6,8 +6,19 @@ services:
     plan: free
     autoDeploy: true
     envVars:
+      # Database (Railway MySQL recommended for free tier)
       - key: DB_CONNECTION
-        value: pgsql
+        value: mysql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
@@ -22,8 +33,7 @@ services:
         value: https://surya-ray1.github.io
       - key: APP_KEY
         sync: false
-      - key: DATABASE_URL
-        # Provide an external Postgres connection string (e.g., from Neon)
-        # Example: postgres://USER:PASSWORD@HOST/DB?sslmode=require
-        sync: false
+      # If you prefer a single URL instead of individual DB_* vars, add
+      # - key: DATABASE_URL
+      #   sync: false
   # Dockerfile in backend/ will handle build, runtime caches, and migrations
