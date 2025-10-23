@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/google', [AuthController::class, 'google']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/billing/razorpay/order',  [PaymentController::class, 'createRazorpayOrder']);

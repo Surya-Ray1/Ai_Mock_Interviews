@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Card, Form, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
-import { login } from '../services/api';
+import { login, API_BASE } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import loadScript from '../utils/loadScript';
 
 export default function Login(){
   const nav = useNavigate();
@@ -10,6 +11,7 @@ export default function Login(){
   const [loading,setLoading] = useState(false);
   const [showPwd,setShowPwd] = useState(false);
   const [capsOn,setCapsOn] = useState(false);
+  const [googleReady,setGoogleReady] = useState(false);
 
   const validateEmail = (v)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const emailInvalid = f.email && !validateEmail(f.email);
@@ -24,11 +26,42 @@ export default function Login(){
       if(f.remember) localStorage.setItem('remember_email', f.email.trim());
       nav('/setup');
     }catch(e){
-      setErr(e.response?.data?.message || 'Login failed');
+      if(!e.response){
+        setErr(`Cannot reach API (${API_BASE}). Is the backend running?`);
+      } else {
+        setErr(e.response?.data?.message || 'Login failed');
+      }
     }finally{ setLoading(false); }
   };
 
   const quickFill = ()=> setF(s=>({ ...s, email: localStorage.getItem('remember_email') || s.email, password: s.password }));
+
+  // Initialize Google Identity Services if client id exists
+  const gClient = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  if (gClient && !googleReady) {
+    loadScript('https://accounts.google.com/gsi/client').then(()=> setGoogleReady(true)).catch(()=> setGoogleReady(false));
+  }
+
+  const onGoogle = async ()=>{
+    if(!gClient) return setErr('Google login not configured. Set VITE_GOOGLE_CLIENT_ID in frontend .env');
+    setErr('');
+    try{
+      await loadScript('https://accounts.google.com/gsi/client');
+      /* global google */
+      google.accounts.id.initialize({ client_id: gClient, callback: async ({ credential }) => {
+        try{
+          setLoading(true);
+          const res = await fetch(`${API_BASE}/auth/google`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id_token: credential })});
+          if(!res.ok){ const t = await res.json().catch(()=>({message:'Google auth failed'})); throw new Error(t.message || 'Google auth failed'); }
+          const { token } = await res.json();
+          localStorage.setItem('token', token);
+          nav('/setup');
+        }catch(e){ setErr(e.message || 'Google login failed'); }
+        finally{ setLoading(false); }
+      }});
+      google.accounts.id.prompt();
+    }catch(e){ setErr('Failed to initialize Google login'); }
+  };
 
   return (
     <div className="auth-page d-flex align-items-center justify-content-center py-5">
@@ -92,9 +125,14 @@ export default function Login(){
 
                 <div className="text-center text-secondary mt-3">or</div>
 
-                <Button variant="outline-light" className="w-100 mt-2" type="button" disabled title="Coming soon">
-                  Continue with Google
-                </Button>
+                <div className="d-grid gap-2 mt-2">
+                  <Button variant="outline-light" type="button" onClick={onGoogle} disabled={loading || (!gClient)} title={!gClient? 'Set VITE_GOOGLE_CLIENT_ID to enable':''}>
+                    Continue with Google
+                  </Button>
+                  <Button variant="outline-secondary" type="button" onClick={()=>{ localStorage.setItem('token','demo'); nav('/setup'); }}>
+                    Continue as guest (demo)
+                  </Button>
+                </div>
 
                 <div className="text-center mt-3 text-secondary">
                   No account? <a href="/register">Create one</a>
