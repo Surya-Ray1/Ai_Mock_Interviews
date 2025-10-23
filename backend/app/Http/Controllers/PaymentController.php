@@ -20,18 +20,38 @@ class PaymentController extends Controller
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
             
+            // Check if Razorpay keys are configured
+            $keyId = env('RAZORPAY_KEY_ID');
+            $keySecret = env('RAZORPAY_KEY_SECRET');
+            
+            if (!$keyId || !$keySecret) {
+                return response()->json(['error' => 'Razorpay not configured. Contact admin.'], 400);
+            }
+            
             $base   = (int) env('PRO_PRICE_PAISE', 29900);
             $pct    = (float) env('CONVENIENCE_FEE_PCT', 0.03);
             $minFee = (int) env('CONVENIENCE_FEE_MIN_PAISE', 500);
             $fee    = max((int) round($base * $pct), $minFee);
             $amount = $base + $fee;
 
-            $order = $this->api()->order->create([
-                'amount'   => $amount,
-                'currency' => 'INR',
-                'receipt'  => 'rcpt_'.time().'_u'.$u->id,
-                'notes'    => ['user_id'=>$u->id, 'type'=>'pro_upgrade', 'base'=>$base, 'fee'=>$fee],
-            ]);
+            try {
+                $order = $this->api()->order->create([
+                    'amount'   => $amount,
+                    'currency' => 'INR',
+                    'receipt'  => 'rcpt_'.time().'_u'.$u->id,
+                    'notes'    => ['user_id'=>$u->id, 'type'=>'pro_upgrade', 'base'=>$base, 'fee'=>$fee],
+                ]);
+            } catch (\Exception $rzError) {
+                // Razorpay-specific error
+                $msg = $rzError->getMessage();
+                Log::error('Razorpay API Error', ['message' => $msg, 'user_id' => $u->id]);
+                
+                if (str_contains($msg, 'authentication') || str_contains($msg, 'Authentication')) {
+                    return response()->json(['error' => 'Razorpay authentication failed. Please check API keys in backend/.env'], 400);
+                }
+                
+                return response()->json(['error' => 'Payment gateway error: ' . $msg], 400);
+            }
 
             // Store payment record
             try {
