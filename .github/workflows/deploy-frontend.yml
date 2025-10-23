@@ -40,6 +40,9 @@ jobs:
       - name: Build
         env:
           BASE_PATH: /Ai_Mock_Interviews/
+          # Set this repository secret to point the frontend to the backend API
+          # e.g., https://ai-mock-interviews-backend.onrender.com/api
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
 
       - name: Upload artifact
