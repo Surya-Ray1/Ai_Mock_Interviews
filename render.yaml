@@ -1,11 +1,15 @@
 databases:
   - name: ai-mock-interviews-db
+    databaseName: aimock
+    user: aimock_user
+    plan: starter
 
 services:
   - type: web
     name: ai-mock-interviews-backend
+    env: docker
     rootDir: backend
-    plan: free
+    plan: starter
     autoDeploy: true
     envVars:
       - key: APP_ENV
@@ -26,13 +30,6 @@ services:
         fromDatabase:
           name: ai-mock-interviews-db
           property: connectionString
-    buildCommand: |
-      composer install --no-dev --prefer-dist --optimize-autoloader
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
-      php artisan storage:link || true
-    startCommand: |
-      php -d variables_order=EGPCS -S 0.0.0.0:$PORT -t public public/index.php
+    # Dockerfile in backend/ will handle build and start
     postDeployCommand: |
       php artisan migrate --force
