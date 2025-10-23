@@ -160,3 +160,36 @@ body {
 }
 .iv-bubble.user { color: #d7e5ff; }
 .iv-bubble.ai   { color: #dcd6ff; }
+
+/* ====== Auth / Login styles ====== */
+.auth-page {
+  min-height: calc(100vh - 56px);
+  background:
+    radial-gradient(120% 80% at 10% 10%, rgba(121,85,255,0.20), transparent 50%),
+    radial-gradient(120% 80% at 90% 10%, rgba(0,212,255,0.15), transparent 50%),
+    linear-gradient(180deg, #0b0e16 0%, #0f1220 100%);
+}
+
+.auth-card {
+  border: 1px solid var(--iv-border);
+  background: linear-gradient(180deg, rgba(18,22,36,0.85), rgba(12,15,24,0.85));
+  backdrop-filter: blur(6px);
+  box-shadow: 0 16px 60px rgba(0,0,0,0.45);
+}
+
+.brand-gradient {
+  background: linear-gradient(90deg,#b5b9ff, #a0f0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.input-glow:focus {
+  border-color: var(--iv-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(121,85,255,0.25) !important;
+}
+
+.caps-hint {
+  color: #ffd7db;
+  font-size: 12px;
+}
