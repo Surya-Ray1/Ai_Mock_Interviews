@@ -30,6 +30,4 @@ services:
         fromDatabase:
           name: ai-mock-interviews-db
           property: connectionString
-    # Dockerfile in backend/ will handle build and start
-    postDeployCommand: |
-      php artisan migrate --force
+    # Dockerfile in backend/ will handle build, runtime caches, and migrations

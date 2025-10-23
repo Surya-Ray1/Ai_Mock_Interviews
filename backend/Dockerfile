@@ -35,4 +35,9 @@ RUN php -r "file_exists('.env') || copy('.env.example', '.env');" \
 EXPOSE 8080
 
 # Start PHP built-in server; Laravel will read env from container env vars provided by Render
-CMD ["bash", "-lc", "php -d variables_order=EGPCS -S 0.0.0.0:$PORT -t public public/index.php"]
+# Copy entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Start via entrypoint: clear/cache config, run migrations, then serve
+CMD ["bash", "/app/entrypoint.sh"]
